@@ -1,0 +1,59 @@
+---
+title: "Peer-graded Assignment: R Markdown and Leaflet"
+author: "Manolo Malaver-Vojvodic"
+date: "July 28, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+## Canadian Capitals
+
+This is an R Markdown document that shows the capital of each Canadian province and territory.
+
+When the user clicks on the maple leaf icon a popup window will show the name of the city.
+
+```{r, echo=FALSE}
+library(leaflet)
+
+data <- read.csv("data/cities.csv")
+
+pos_data<- data.frame(
+  lat = data['latitude'],
+  lng = data['longitude'])
+
+icon <- makeIcon(
+  iconUrl = "images/icon.png",
+  iconWidth = 31*215/230, iconHeight = 31,
+  iconAnchorX = 31*215/230/2, iconAnchorY = 16
+)
+
+par_icon <- makeIcon(
+  iconUrl = "images/par.png",
+  iconWidth = 31*215/230, iconHeight = 35,
+  iconAnchorX = 31*215/230/2, iconAnchorY = 21
+)
+
+
+
+pos_data %>%
+leaflet() %>% 
+addTiles(group = "Default colours") %>% 
+  addProviderTiles(providers$Stamen.Toner, group = "Black and white")%>% 
+  addProviderTiles(providers$Stamen.TonerLite, group = "Gray colours") %>%
+setView(lat = 55.20, lng = -104.63, zoom = 3) %>%
+addMarkers(icon = icon, popup = data$cities) %>%
+addMarkers(lat=45.4236, lng=-75.7009, popup = "Ottawa, Capital of Canada", icon = par_icon)%>%
+  # Layers control
+  addLayersControl(
+    baseGroups = c("Default colours", "Black and white", "Gray colours"),
+    options = layersControlOptions(collapsed = FALSE)
+  )
+
+
+
+
+```
